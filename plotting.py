@@ -6,7 +6,7 @@ import pandas as pd
 
 MARKERSIZE = 5
 LINEWIDTH = 0
-ALPHA = 0.4
+ALPHA = 0.2
 
 
 def configure_plot_style(style='darkgrid'):

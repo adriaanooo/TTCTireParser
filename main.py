@@ -1,4 +1,4 @@
-from magicFormula import magic_formula_coefficients
+from magicFormula import fit_magic_formula
 from data_handling import *
 from plotting import *
 import pandas as pd
@@ -26,6 +26,9 @@ if __name__ == '__main__':
     ia_centers, df['IA_cluster'] = cluster_and_label_col(df, column='IA', n_clusters=ia_clusters)
     fz_centers, df['FZ_cluster'] = cluster_and_label_col(df, column='FZ', n_clusters=fz_clusters)
     df.set_index(['P_cluster', 'IA_cluster', 'FZ_cluster'], inplace=True)
+
+    print('---FITTING MAGIC FORMULA---')
+    for p_center
 
     print('\n---PLOTTING DATA---\n')
     recursive_plot_cornering_data(
