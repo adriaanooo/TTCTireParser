@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-def fit_using_magic_formula():
+def magic_formula_coefficients():
     """
     y = D*sin(C*arctan(B*x-E*(B*x-arctan(B*x))))
 
