@@ -1,37 +1,61 @@
-from magicFormula import fit_magic_formula
-from data_handling import *
-from plotting import *
-import pandas as pd
+from tire import Tire
 
 
 if __name__ == '__main__':
-    print('\n---DATA PARSING---\n')
-    path = 'B1965raw21.dat'
-    df = pd.read_table(path, sep='\t', skiprows=[0, 2], header=0).astype(float)
-    configure_plot_style()
-    plot_multiple_columns(df, ['P', 'IA', 'FZ', 'V', 'TSTC'])
 
-    # Asks user for start and end indices of the run to neglect warm up and cool down
-    run_start = int(input("Enter run start index: "))
-    run_end = int(input("Enter run end index: "))
-    df = df[run_start:run_end]
+    my_tire = Tire(lat_path='ZTD1_18_6-10/B2356run40.dat', long_path='ZTD1_18_6-10/B2356run63.dat')
+    if my_tire.data['cornering'] is not None:
+        cornering_data = True
+    else:
+        cornering_data = False
+    if my_tire.data['drive_brake'] is not None:
+        drive_brake_data = True
+    else:
+        drive_brake_data = False
 
-    # Asks users for the number of different pressures, IAs, and FZs, and clusters data accordingly
-    # Creates a hierarchal index in the data frame to allow for indexing of tire run parameters
-    print('\n---Data Clustering---\n')
-    p_clusters = int(input('# of Tire pressures: '))
-    ia_clusters = int(input('# of Inclination angles: '))
-    fz_clusters = int(input('# of Vertical forces: '))
-    p_centers, df['P_cluster'] = cluster_and_label_col(df, column='P', n_clusters=p_clusters)
-    ia_centers, df['IA_cluster'] = cluster_and_label_col(df, column='IA', n_clusters=ia_clusters)
-    fz_centers, df['FZ_cluster'] = cluster_and_label_col(df, column='FZ', n_clusters=fz_clusters)
-    df.set_index(['P_cluster', 'IA_cluster', 'FZ_cluster'], inplace=True)
+    print('---PREPROCESSING---')
 
-    print('---FITTING MAGIC FORMULA---')
-    for p_center
+    # Data cleanup for cornering runs
+    if cornering_data:
+        my_tire.plot_vs_time(['P', 'IA', 'FZ', 'V', 'SA'], 'cornering')
+        print('\n')
+        my_tire.clean_data('cornering')
+        my_tire.plot_vs_time(['P', 'IA', 'FZ', 'V', 'SA'], 'cornering')
+        print('\n')
+        my_tire.cluster_controlled_variables('cornering')
 
-    print('\n---PLOTTING DATA---\n')
-    recursive_plot_cornering_data(
-        df, 83, ia_centers, fz_centers,
-        [('SA', 'FY'), ('SA', 'MZ'), ]
-    )
+    # Data cleanup for drive/brake runs
+    if drive_brake_data:
+        my_tire.plot_vs_time(['P', 'IA', 'FZ', 'SA', 'SR'], 'drive_brake')
+        print('\n')
+        my_tire.clean_data('drive_brake')
+        my_tire.plot_vs_time(['P', 'IA', 'FZ', 'SA', 'SR'], 'drive_brake')
+        print('\n')
+        my_tire.cluster_controlled_variables('drive_brake')
+
+    print('\n')
+    print('---PLOTTING DATA---')
+
+    user_plotting = True
+    while user_plotting:
+
+        if cornering_data:
+            print('\n')
+            my_tire.print_controlled_variable_values('cornering')
+            print('\n')
+            my_tire.plot_raw_data(
+                [('SA', 'FY'), ('SA', 'MZ'), ('SA', 'muy')], int(input('Pressure: ')), int(input('Inclination angle: ')), 'cornering'
+            )
+
+        if drive_brake_data:
+            print('\n')
+            my_tire.print_controlled_variable_values('drive_brake')
+            print('\n')
+            my_tire.plot_raw_data(
+                [('SL', 'FX'), ('SL', 'mux')], int(input('Pressure: ')), int(input('Inclination angle: ')), 'drive_brake'
+            )
+
+        print('\n')
+        user_continue = input("Continue plotting? (Y/n) ")
+        if user_continue == 'n':
+            user_plotting = False
