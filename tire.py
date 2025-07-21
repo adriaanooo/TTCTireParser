@@ -84,7 +84,7 @@ class Tire:
         # Removes SA = 0 for cornering and SA != 0 for drive/brake
         # Also calculates friction coefficients
         if run_type == 'cornering':
-            self.data[run_type] = self.data[run_type][~np.isclose(self.data[run_type]['SA'], 0, atol=0.1)]
+            # self.data[run_type] = self.data[run_type][~np.isclose(self.data[run_type]['SA'], 0, atol=0.1)]
             self.data[run_type]['muy'] = self.data[run_type]['FY'] / self.data[run_type]['FZ']
         elif (run_type == 'drive_brake') and pure_slip:
             self.data[run_type] = self.data[run_type][np.isclose(self.data[run_type]['SA'], 0, atol=0.1)]

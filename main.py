@@ -1,9 +1,33 @@
+import os
 from tire import Tire
 
 
 if __name__ == '__main__':
 
-    my_tire = Tire(lat_path='ZTD1_18_6-10/B2356run40.dat', long_path='ZTD1_18_6-10/B2356run63.dat')
+    # Path selection
+    run_selected = False
+    compound_selected = False
+    while not run_selected:
+        while not compound_selected:
+            print(f"Tire compounds: {os.listdir('Tires')}")
+            compound = input('Enter compounds: ')
+            if compound in os.listdir('Tires'):
+                compound_selected = True
+        print(f"Runs: {os.listdir(f'Tires/{compound}')}")
+        lat_run = input('Enter cornering run (n for None): ')
+        if lat_run == 'n':
+            lat_run = None
+        long_run = input('Enter drive/brake run (n for None): ')
+        if long_run == 'n':
+            long_run = None
+        if lat_run and long_run in os.listdir(f'Tires/{compound}'):
+            run_selected = True
+        elif lat_run in os.listdir(f'Tires/{compound}') and not long_run:
+            run_selected = True
+        elif long_run in os.listdir(f'Tires/{compound}') and not lat_run:
+            run_selected = True
+
+    my_tire = Tire(lat_path=lat_path, long_path=long_path)
     # This checks which types of data is submitted
     # Prob a better way to do this but DataFrame truth is ambiguous
     if my_tire.data['cornering'] is not None:
