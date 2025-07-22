@@ -21,10 +21,14 @@ if __name__ == '__main__':
         if long_run == 'n':
             long_run = None
         if lat_run and long_run in os.listdir(f'Tires/{compound}'):
+            long_path = f'Tires/{compound}/{long_run}'
+            lat_path = f'Tires/{compound}/{lat_run}'
             run_selected = True
         elif lat_run in os.listdir(f'Tires/{compound}') and not long_run:
+            lat_path = f'Tires/{compound}/{lat_run}'
             run_selected = True
         elif long_run in os.listdir(f'Tires/{compound}') and not lat_run:
+            long_path = f'Tires/{compound}/{long_run}'
             run_selected = True
 
     my_tire = Tire(lat_path=lat_path, long_path=long_path)
