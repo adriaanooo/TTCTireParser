@@ -1,3 +1,5 @@
+from matplotlib.pyplot import title
+
 from data_handling import *
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -114,10 +116,6 @@ class Tire:
             self.data[run_type], column='FZ', n_clusters=n_fz
         )
 
-        # Creates a hierarchal index: Pressure -> IA -> FZ
-        self.data[run_type].set_index(['P', 'IA', 'FZ', 'ET'], inplace=True)
-        self.data[run_type].sort_index(inplace=True)
-
     def print_controlled_variable_values(self, run_type):
         """
         Prints values of controlled variables for user refernce.
@@ -129,33 +127,28 @@ class Tire:
               f"\n\tInclination angles: {[int(ia) for ia in self.ia_vals[run_type]]}"
               f"\n\tVertical forces: {[int(fz) for fz in self.fz_vals[run_type]]}")
 
-    def plot_raw_data(self, plots: list[tuple[str, str]], p, ia, run_type):
+    def plot_raw_data(self, run_type: str, plots: list[tuple[str, str]]):
         """
         Plots the raw tire data as specified by plots argument ([(x1, y1), (x2, y2), ..., (xn, yn)]) given test
         conditions (pressure and inclination angle).
-        :param plots:
-        :param p:
-        :param ia:
         :param run_type:
+        :param plots:
         :return:
         """
-        self.__check_for_run_type_data(run_type)
-
-        fig, axes = plt.subplots(1, len(plots), figsize=FIGSIZE)
-        for fz in self.fz_vals[run_type]:
-            for i, plot in enumerate(plots):
-                try:
-                    x = self.data[run_type].loc[(p, ia, fz)][plot[0]]
-                    y = self.data[run_type].loc[(p, ia, fz)][plot[1]]
-                except:
-                    raise KeyError(f"{plot[0]} and {plot[1]} data not found in {run_type} run")
-                sns.scatterplot(
-                    x=x, y=y, ax=axes[i], s=MARKERSIZE, linewidth=LINEWIDTH, alpha=ALPHA, label=f'{fz}N'
-                )
-        for i, ax in enumerate(axes):
-            ax.set_title(
-                f'{plots[i][0]} VS {plots[i][1]} @ {p}kPa, {ia}DEG Inclination'
+        for plot in plots:
+            print(f'Plotting {plot[0]} VS {plot[1]}...')
+            g = sns.FacetGrid(self.data[run_type], col='P', row='IA', hue='FZ')
+            g.map(
+                sns.scatterplot, plot[0], plot[1],
+                s=MARKERSIZE,
+                linewidth=LINEWIDTH,
+                alpha=ALPHA
             )
-        plt.show()
+            g.set(xlim=(min(self.data[run_type][plot[0]]), max(self.data[run_type][plot[0]])))
+            g.add_legend()
+            g._legend.set_title('Vertical load')
+            for lh in g._legend.legend_handles:
+                lh.set_alpha(1)
+                lh.set_sizes([50])
 
-
+            plt.show()
