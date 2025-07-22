@@ -3,7 +3,7 @@ from tire import Tire
 
 if __name__ == '__main__':
 
-    my_tire = Tire(lat_path='ZTD1_18_6-10/B2356run40.dat', long_path='ZTD1_18_6-10/B2356run63.dat')
+    my_tire = Tire(lat_path='Tires/ZTD1_18_6-10/B2356run40.dat', long_path='Tires/ZTD1_18_6-10/B2356run63.dat')
     if my_tire.data['cornering'] is not None:
         cornering_data = True
     else:
