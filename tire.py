@@ -1,5 +1,4 @@
-from matplotlib.pyplot import title
-
+import os
 from data_handling import *
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -19,8 +18,8 @@ class Tire:
     def __init__(self, long_path=None, lat_path=None):
 
         self.data = {
-            'cornering': read_ttc_data_from_path(lat_path) if lat_path else None,
-            'drive_brake': read_ttc_data_from_path(long_path) if long_path else None,
+            'lateral': read_ttc_data_from_path(lat_path) if lat_path else None,
+            'longitudinal': read_ttc_data_from_path(long_path) if long_path else None,
         }
         # Initializes dictionaries to organize controlled variable values for cornering and drive/brake run
         self.p_vals = {}
@@ -85,10 +84,10 @@ class Tire:
 
         # Removes SA = 0 for cornering and SA != 0 for drive/brake
         # Also calculates friction coefficients
-        if run_type == 'cornering':
+        if run_type == 'lateral':
             # self.data[run_type] = self.data[run_type][~np.isclose(self.data[run_type]['SA'], 0, atol=0.1)]
             self.data[run_type]['muy'] = self.data[run_type]['FY'] / self.data[run_type]['FZ']
-        elif (run_type == 'drive_brake') and pure_slip:
+        elif (run_type == 'longitudinal') and pure_slip:
             self.data[run_type] = self.data[run_type][np.isclose(self.data[run_type]['SA'], 0, atol=0.1)]
             self.data[run_type]['mux'] = self.data[run_type]['FX'] / self.data[run_type]['FZ']
 
@@ -137,18 +136,20 @@ class Tire:
         """
         for plot in plots:
             print(f'Plotting {plot[0]} VS {plot[1]}...')
-            g = sns.FacetGrid(self.data[run_type], col='P', row='IA', hue='FZ')
-            g.map(
-                sns.scatterplot, plot[0], plot[1],
-                s=MARKERSIZE,
-                linewidth=LINEWIDTH,
-                alpha=ALPHA
-            )
-            g.set(xlim=(min(self.data[run_type][plot[0]]), max(self.data[run_type][plot[0]])))
-            g.add_legend()
-            g._legend.set_title('Vertical load')
-            for lh in g._legend.legend_handles:
-                lh.set_alpha(1)
-                lh.set_sizes([50])
-
-            plt.show()
+            for p in self.p_vals[run_type]:
+                for ia in self.ia_vals[run_type]:
+                    data = self.data[run_type]
+                    data = data[data['P'] == p]
+                    data = data[data['IA'] == ia]
+                    plt.clf()
+                    sns.scatterplot(
+                        data, x=plot[0], y=plot[1],
+                        s=MARKERSIZE,
+                        alpha=ALPHA,
+                        hue='FZ',
+                        palette='rocket'
+                    )
+                    dir = f'Plots/{plot[0]}_{plot[1]}'
+                    if not os.path.isdir(dir):
+                        os.makedirs(dir)
+                    plt.savefig(f'{dir}/{plot[0]}_{plot[1]}_{p}kPa_{ia}deg.png')
