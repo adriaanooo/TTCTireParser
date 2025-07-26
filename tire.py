@@ -1,5 +1,6 @@
 import os
 
+from matplotlib.pyplot import title
 from scipy.stats import alpha
 
 from data_handling import *
@@ -146,14 +147,13 @@ class Tire:
                     linewidth=LINEWIDTH,
                     s=MARKERSIZE,
                     alpha=ALPHA,
-                    hue='FZ', palette='rocket'
+                    hue='FZ', palette='turbo_r'
                 )
 
-                g.legend_.set_title('Vertical Load')
+                legend = plt.legend(markerscale=5, title='Vertical Load')
 
-                for lh in g.legend_.legend_handles:
-                    lh.set_alpha(1)
-                    lh._sizes = [500]
+                for handle in legend.legend_handles:
+                    handle.set_alpha(1)
 
                 dir = f'Plots/{plot[0]}_{plot[1]}'
                 if not os.path.isdir(dir):
