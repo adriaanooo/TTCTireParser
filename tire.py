@@ -136,20 +136,18 @@ class Tire:
         """
         for plot in plots:
             print(f'Plotting {plot[0]} VS {plot[1]}...')
-            for p in self.p_vals[run_type]:
-                for ia in self.ia_vals[run_type]:
-                    data = self.data[run_type]
-                    data = data[data['P'] == p]
-                    data = data[data['IA'] == ia]
-                    plt.clf()
-                    sns.scatterplot(
-                        data, x=plot[0], y=plot[1],
-                        s=MARKERSIZE,
-                        alpha=ALPHA,
-                        hue='FZ',
-                        palette='rocket'
-                    )
-                    dir = f'Plots/{plot[0]}_{plot[1]}'
-                    if not os.path.isdir(dir):
-                        os.makedirs(dir)
-                    plt.savefig(f'{dir}/{plot[0]}_{plot[1]}_{p}kPa_{ia}deg.png')
+            for (p, ia), group in self.data[run_type].groupby(['P', 'IA']):
+                plt.clf()
+                sns.scatterplot(
+                    group, x=plot[0], y=plot[1],
+                    linewidth=LINEWIDTH,
+                    s=MARKERSIZE,
+                    alpha=ALPHA,
+                    hue='FZ', palette='rocket'
+                )
+
+                dir = f'Plots/{plot[0]}_{plot[1]}'
+                if not os.path.isdir(dir):
+                    os.makedirs(dir)
+
+                plt.savefig(f'{dir}/{plot[0]}_{plot[1]}_{p}kPa_{ia}deg.png')

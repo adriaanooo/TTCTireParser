@@ -59,4 +59,3 @@ if __name__ == '__main__':
         my_tire.plot_raw_data('longitudinal', [('SL', 'FX'), ('SL', 'mux')])
 
     print('\n')
-    print('---Magic Formula 5.2 Fitting---')
