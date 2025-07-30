@@ -21,6 +21,7 @@ class Tire:
     """
     def __init__(self, long_path=None, lat_path=None):
 
+        self.name = input('Enter Tire Name: ')
         self.data = {
             'lateral': read_ttc_data_from_path(lat_path) if lat_path else None,
             'longitudinal': read_ttc_data_from_path(long_path) if long_path else None,
@@ -150,13 +151,15 @@ class Tire:
                     hue='FZ', palette='turbo_r'
                 )
 
+                g.set_title(f'{self.name} {plot[0]} VS {plot[1]} @ {p}kPa, {ia} Deg')
+
                 legend = plt.legend(markerscale=5, title='Vertical Load')
 
                 for handle in legend.legend_handles:
                     handle.set_alpha(1)
 
-                dir = f'Plots/{plot[0]}_{plot[1]}'
+                dir = f'Plots/{self.name}/{plot[0]}_{plot[1]}'
                 if not os.path.isdir(dir):
                     os.makedirs(dir)
 
-                plt.savefig(f'{dir}/{plot[0]}_{plot[1]}_{p}kPa_{ia}deg.png')
+                plt.savefig(f'{dir}/{self.name}_{plot[0]}_{plot[1]}_{p}kPa_{ia}deg.png')
